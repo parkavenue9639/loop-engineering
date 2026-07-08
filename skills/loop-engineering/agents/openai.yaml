@@ -1,0 +1,4 @@
+interface:
+  display_name: "Loop Engineering"
+  short_description: "Apply loop engineering to agent goals"
+  default_prompt: "Use $loop-engineering to turn this request into a loop-engineered Codex goal and start it when ready."

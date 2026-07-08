@@ -1,0 +1,13 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Agent Workflows",
+      "description": "Loop-engineering skills that make long-running agent work easier to start, verify, delegate, and stop.",
+      "skills": [
+        "loop-engineering"
+      ]
+    }
+  ]
+}
