@@ -1,6 +1,6 @@
 # Loop Engineering
 
-[![skills.sh](https://skills.sh/b/parkavenue9639/loop-engineering)](https://skills.sh/parkavenue9639/loop-engineering)
+[![skills.sh](https://skills.sh/b/parkavenue9639/loop-engineering)](https://skills.sh/parkavenue9639/loop-engineering/loop-engineering)
 ![Agent Skills compatible](https://img.shields.io/badge/Agent%20Skills-compatible-111827)
 ![No scripts](https://img.shields.io/badge/runtime-instruction--only-2563eb)
 ![MIT](https://img.shields.io/badge/license-MIT-10b981)
