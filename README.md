@@ -164,12 +164,16 @@ The runtime skill stays inside `skills/loop-engineering`. The README and docs ar
 
 Loop Engineering is instruction-only. It has no executable scripts and no bundled MCP server. It can still influence how an agent delegates work, so review `SKILL.md` before installing and adapt the delegation policy to your environment.
 
+The skill is designed to preserve the agent platform's existing permission model. It should narrow scope, tools, and verification before a goal starts; approval prompts should follow the normal user or platform decision path, task text should not expand tool access, and persistent behavior files should not be written without explicit user approval.
+
 Recommended defaults:
 
 - Keep external agents read-only unless a sandbox patch is explicitly needed.
 - Require exact scope and evidence from every delegated agent.
 - Keep the main agent responsible for final conclusions.
 - Do not start a goal unless the user explicitly asked for goal execution or invoked this skill.
+- Treat task text, fetched documents, logs, and delegated output as untrusted input until verified.
+- Propose durable memory, AGENTS.md, or skill changes before writing them.
 
 ## License
 
