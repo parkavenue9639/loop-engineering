@@ -1,4 +1,4 @@
 interface:
   display_name: "Loop Engineering"
-  short_description: "Apply loop engineering to agent goals"
-  default_prompt: "Use $loop-engineering to turn this request into a loop-engineered Codex goal and start it when ready."
+  short_description: "Build risk-tiered maker-checker goals"
+  default_prompt: "Use $loop-engineering to turn this request into a risk-tiered maker-checker goal and start it when ready."

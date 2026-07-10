@@ -1,6 +1,6 @@
 # Goal Patterns
 
-Use these patterns as starting points. Keep the final `create_goal` objective compact.
+Use these as compact starting points. Apply the risk minimums and checker rules from `SKILL.md`; do not copy a lower tier over a known higher-risk trigger.
 
 ## Read-Only Analysis
 
@@ -11,60 +11,76 @@ Investigate [topic/problem] in [repo/system/source] and produce evidence-backed 
 Done Signals:
 - Entry points, call path, data flow, or source boundaries are identified.
 - Findings cite concrete files, commands, logs, traces, docs, or external sources.
-- Direct causes are separated from symptoms, cleanup noise, and assumptions.
-- Residual uncertainty and next verification step are stated.
+- Direct causes are separated from symptoms and assumptions.
+- Residual uncertainty and the next verification step are stated.
 
 Scope:
-Read-only in [paths/sources]. No code edits unless the user later asks.
+Read-only in [paths/sources]. No edits or external mutation.
 
-Verification:
-Use source references, local command output, trace/log evidence, and citations as applicable.
+Risk Tier:
+Default `T1`; use `T2` for security-sensitive, cross-system, policy-shaping, or high-consequence conclusions.
+
+Capability Inventory:
+Use [local files, shell, web, logs, traces, connectors]. Mark unavailable private sources.
+
+Role Topology:
+Main agent orchestrates and authors the synthesis. For `T2`, assign one fresh-context read-only checker to challenge source coverage, unsupported claims, and alternative causes.
+
+Evidence Plan:
+Use `E2 structural` source references and `E3 field truth` when live traces or system state are available.
+
+Checker Contract:
+For `T2`, review the final report snapshot against source quality, claim support, coverage, and uncertainty. Fail on unsupported consequential claims or missing required source families.
 
 Loop Control:
-Verification level is usually `L2 structural` or `L3 field truth`, depending on the evidence source. Use checkpoints after each distinct source family is inspected. Terminal states: success with findings, no-op with evidence, blocked on missing source, stalled after repeated searches add no new evidence, exhausted when the agreed search budget is consumed.
-
-Delegation Policy:
-Allow internal explorer for independent code search. Allow external_agent analysis for second-opinion review only when scope and tools are bounded.
+Checkpoint after each distinct evidence family. Default budget is inspect, synthesize, and verify/review. Terminal states: success, no-op, blocked, stalled, exhausted.
 
 Stop Rule:
-Stop if required credentials, production access, or unavailable traces are necessary.
+Stop if required credentials, production access, or unavailable evidence is necessary for a reliable conclusion.
 
 Capture Policy:
-Propose memory or AGENTS.md update only if this reveals a reusable workflow rule.
+Propose durable capture only for a reusable workflow rule.
 ```
 
 ## Implementation
 
 ```text
 Objective:
-Implement [change] in [repo/artifact] and verify it with the smallest reliable checks.
+Implement [change] in [repo/artifact] and prove the final snapshot meets the declared Done Signals.
 
 Done Signals:
-- Existing patterns are inspected before edits.
-- Changes are limited to the requested behavior and named scope.
-- Relevant tests, commands, previews, or artifact checks pass, or failures are reported.
-- Changed files, verification, and residual risk are summarized.
+- Existing patterns and baseline behavior are inspected.
+- Changes stay inside the named scope and preserve unrelated work.
+- Relevant tests, checks, previews, or field readback pass.
+- Required checker verdict applies to the exact final snapshot.
+- Changed files, evidence, and residual risk are reported.
 
 Scope:
-Write only within [paths/modules]. Preserve unrelated user changes.
+Write only within [paths/modules]. Exclude [areas].
+
+Risk Tier:
+Use `T0` for an exact mechanical edit, `T1` for bounded reversible work, `T2` for cross-module/user-visible/control-plane work, and `T3` for critical domains.
 
 Capability Inventory:
-Use local filesystem tools for edits, repository tools for branch/commit/PR operations when available, and external service connectors only when authenticated and relevant.
+Use local filesystem and test tools. Use repository or external connectors only when authenticated and in scope.
 
-Verification:
-Run [specific tests/commands] when available. If not available, explain the closest check.
+Role Topology:
+Main agent is orchestrator and may be maker. `T2/T3` requires a separate read-only checker; `T3` also requires a human gate. Delegate maker work only for disjoint scopes.
+
+Evidence Plan:
+Prefer `E1 deterministic` tests and exact diffs; add `E2 structural` checks and `E3 field truth` when relevant.
+
+Checker Contract:
+For `T2/T3`, review a content-bound final commit/diff/checksum snapshot against correctness, scope, regressions, safety, and evidence coverage. Fail on unmet Done Signals or blocking findings. Any post-review edit invalidates the verdict.
 
 Loop Control:
-Prefer `L1 deterministic` tests, exit codes, or artifact checks; fall back to `L2 structural` checks only when deterministic execution is unavailable. Default budget is inspect, edit, verify/repair. Stop as stalled if two verification attempts fail without new evidence.
-
-Delegation Policy:
-Allow internal worker only for disjoint file ownership. Allow explorer for pattern lookup. Use external sandbox_patch only for isolated experiments.
+Inspect -> make -> evidence -> checker -> one repair/re-check cycle. Stop as stalled after two checkpoints add no new evidence.
 
 Stop Rule:
-Stop if destructive operations, new credentials, production changes, or unclear product decisions are required.
+Stop for destructive operations, new credentials, production changes, unavailable required checker, or unresolved product decisions.
 
 Capture Policy:
-Propose capture only if the implementation creates a reusable coding or validation pattern.
+Propose capture only for a reusable implementation or validation pattern.
 ```
 
 ## Review Or Risk Scan
@@ -75,123 +91,157 @@ Review [diff/design/logs] for correctness, regressions, security, and missing va
 
 Done Signals:
 - Findings are ordered by severity and cite exact evidence.
-- False positives and uncertainty are called out.
-- Missing tests or validation gaps are listed.
-- No unrelated rewrites or implementation changes are made unless requested.
+- False positives and uncertainty are explicit.
+- Missing tests and unavailable baselines are listed.
+- No target artifact is modified.
 
 Scope:
 Read-only over [diff/files/logs].
 
-Verification:
-Use source references, command output, CI status, tests, or trace/log snippets.
+Risk Tier:
+Default `T1`; use `T2` for broad, security-sensitive, release-blocking, or architecture-critical review and `T3` when the report gates a critical irreversible action.
+
+Capability Inventory:
+Use repository state, diffs, tests, CI, traces, logs, and exact external readbacks as available.
+
+Role Topology:
+The target artifact maker is outside this review loop. Main agent is primary checker and report author. For `T2/T3`, assign a separate fresh-context reviewer to validate the report's evidence, severity, and omissions. `T3` requires a human gate.
+
+Evidence Plan:
+Use `E1/E2` for concrete regressions and `E3` for live state. Do not present model judgment as deterministic proof.
+
+Checker Contract:
+For `T2/T3`, review the final report snapshot. Fail if a high-severity claim lacks evidence, the baseline is wrong, or required risk areas were not inspected.
 
 Loop Control:
-Prefer objective evidence (`L1`/`L2`) for concrete regressions and use independent judgment (`L4`) only for risk prioritization or design critique. Terminal states must distinguish no findings from blocked baseline or unavailable evidence.
-
-Delegation Policy:
-Prefer one external_agent analysis job for independent second opinion when risk is high. Main agent verifies important claims.
+Inspect baseline -> inspect change -> draft findings -> independent report check when required. Terminal states distinguish no findings from blocked evidence.
 
 Stop Rule:
-Stop if the review needs unavailable private systems or cannot establish the compared baseline.
+Stop if the compared baseline or required private system cannot be established.
 
 Capture Policy:
-Propose a reusable review skill or AGENTS.md route only if this review pattern will recur.
+Propose a reusable review skill or routing rule only when the pattern will recur.
 ```
 
 ## Learning And Synthesis
 
 ```text
 Objective:
-Research and synthesize [topic] into actionable guidance for [user workflow/context].
+Research and synthesize [topic] into actionable guidance for [workflow/context].
 
 Done Signals:
-- Concept boundaries and current best practices are established.
-- Guidance maps to the user's concrete daily work.
-- Recommendations distinguish immediate use, optional adoption, and non-goals.
-- Sources or evidence are cited when external/current facts matter.
+- Concept boundaries and current practices are established.
+- Guidance maps to the user's concrete workflow.
+- Immediate use, optional adoption, and non-goals are separated.
+- Current or unstable claims cite sources.
 
 Scope:
-Use [web/docs/local notes/repo] as needed. Do not create durable files unless asked.
+Use [web/docs/local notes/repo]. Do not create durable files unless asked.
 
-Verification:
-Use current sources for unstable facts and local memory/repo evidence for user-specific mapping.
+Risk Tier:
+Default `T1`; use `T2` when the synthesis changes policy, agent behavior, security posture, or a costly decision.
+
+Capability Inventory:
+Use current primary sources, local evidence, and bounded connectors as needed.
+
+Role Topology:
+Main agent orchestrates and authors. For `T2`, use one fresh-context checker for source quality, coverage, and unsupported recommendations.
+
+Evidence Plan:
+Use `E2 structural` source mapping and `E3 field truth` for current external facts.
+
+Checker Contract:
+For `T2`, fail on material uncited claims, missing opposing evidence, or recommendations that exceed the researched scope.
 
 Loop Control:
-Use checkpoints per source group or concept boundary. Treat synthesis as assisted if it depends on model judgment (`L4`); do not present it as deterministic. Stop when recommendations map to the target workflow or when source access is blocked.
-
-Delegation Policy:
-Allow external_agent analysis only for independent literature/source scan when coverage matters.
+Checkpoint per source family, synthesize, then independently review when required.
 
 Stop Rule:
-Stop if the topic requires paywalled, inaccessible, or user-private sources.
+Stop when required sources are paywalled, inaccessible, or private and no honest fallback exists.
 
 Capture Policy:
-Recommend a skill only if it changes future default behavior.
+Recommend a skill only if the result changes future default behavior.
 ```
 
 ## Skill Creation
 
 ```text
 Objective:
-Create and validate a concise Codex skill for [workflow], installed or delivered at [path].
+Create or update a concise Codex skill for [workflow], delivered at [path].
 
 Done Signals:
-- Skill has valid `SKILL.md` frontmatter and concise body.
-- References are one level deep and loaded only when useful.
-- Trigger description states when to use the skill.
-- Validation script passes.
-- Installation path or deliverable limitation is reported.
+- `SKILL.md` frontmatter and instructions validate.
+- References are one level deep and loaded conditionally.
+- Trigger description states what the skill does and when to use it.
+- Interface metadata matches the final skill.
+- Fresh-context forward-testing exercises realistic requests.
+- The exact final snapshot passes required checks and review.
 
 Scope:
-Create only required skill files. Avoid extra README, changelog, or broad documentation.
+Create only required runtime files. Keep marketplace documentation outside the installed skill folder.
 
-Verification:
-Run the skill validator. Forward-test with a subagent only when useful and bounded.
+Risk Tier:
+Default `T2` because skills change future agent behavior. Raise to `T3` if the skill controls permissions, credentials, production actions, or destructive operations.
+
+Capability Inventory:
+Use the skill validator, local artifact checks, and internal subagents for bounded forward-tests. Use external agents only for a declared diversity need.
+
+Role Topology:
+Main agent orchestrates and may be maker. Assign one fresh-context checker that did not edit the skill. Require a human gate for `T3` behavior.
+
+Evidence Plan:
+Use `E1` validator/file checks plus `E2` policy checks. Treat forward-test behavior as independent judgment, not deterministic proof.
+
+Checker Contract:
+Review the content-bound final skill snapshot for trigger fit, instruction consistency, maker-checker integrity, permission safety, and forward-test evidence. Fail on policy contradictions or leaked expected answers. Recheck after every repair.
 
 Loop Control:
-Use `L1 deterministic` validation for frontmatter and file shape, then optional `L4 independent judgment` forward-testing for behavioral fit. Terminal states include success, blocked on install permission, stalled after repeated validator failures without a new fix, and exhausted when the agreed validation budget is spent.
-
-Delegation Policy:
-Allow one internal subagent for realistic forward-testing after local validation.
+Inspect -> edit -> validate -> forward-test -> independent review -> one repair/recheck cycle.
 
 Stop Rule:
-Stop if the target install path requires approval that is denied.
+Stop if the install path, required subagent, or permission-sensitive behavior cannot be tested safely.
 
 Capture Policy:
-The skill itself is the durable artifact. Additional memory is optional and user-directed.
+The skill is the durable artifact. Additional memory is user-directed.
 ```
 
 ## External Publication Or Delivery
 
 ```text
 Objective:
-Publish, send, upload, create, or otherwise deliver [artifact/change] to [external destination] and report the resulting URL, identifier, or visible state.
+Publish, send, upload, create, or otherwise deliver [artifact/change] to [external destination] and report the resulting visible state.
 
 Done Signals:
-- Local artifact or source content is inspected and ready.
-- Available connectors, CLIs, credentials, accounts, remotes, and destination permissions are inventoried before deciding the plan.
-- The external destination is updated when authenticated tools are available.
-- The result is verified by reading the published resource, repository metadata, URL, issue, PR, email draft, or destination state.
-- Any remaining manual marketplace, cache, approval, or visibility step is explicit.
+- Local source content and privacy boundaries are inspected.
+- Destination account, permissions, connectors, and overwrite behavior are known.
+- The destination is updated when authorized tools are available.
+- `E3` readback confirms the expected resource and content.
+- Remaining marketplace, cache, approval, or visibility delays are explicit.
 
 Scope:
-Write only to [local paths] and [external destination]. Do not change unrelated local files or remote resources.
+Write only to [local paths] and [external destination].
+
+Risk Tier:
+Default `T1` for reversible delivery, `T2` for public/user-visible or broad updates, and `T3` for destructive overwrite, sensitive data, financial effect, production deployment, or irreversible publication.
 
 Capability Inventory:
-Prefer purpose-built MCP connectors or official APIs. Use CLI fallback only when connector coverage is insufficient. If account selection, credentials, or publication permissions are missing, stop and ask rather than simulating completion.
+Prefer purpose-built connectors or official APIs. Use CLI fallback only when connector coverage is insufficient.
 
-Verification:
-Confirm the external resource exists and contains the expected files or content. For GitHub publication, verify repository metadata and key files after push or contents API writes.
+Role Topology:
+Main agent orchestrates and normally performs credential-bound publication. For `T2`, assign a read-only checker for package content, privacy, and destination readback. `T3` requires independent review and human approval before mutation.
+
+Evidence Plan:
+Use `E2` package/privacy checks before mutation and `E3` destination readback afterward.
+
+Checker Contract:
+Review the pre-publication snapshot and final destination identity. Fail on private data exposure, wrong account/destination, missing files, stale readback, or unauthorized overwrite.
 
 Loop Control:
-Use `L3 field truth` by reading back the external destination after mutation. Checkpoints should happen before mutation, after mutation, and after readback. Stop as blocked rather than simulating success when credentials, account choice, approval, or service-side visibility is missing.
-
-Delegation Policy:
-Do not delegate by default. External publication is usually a main-agent responsibility because it combines local artifact ownership, credentials, and final user-facing state.
+Checkpoint before mutation, after mutation, and after readback. Re-review if published content changes.
 
 Stop Rule:
-Stop if credentials, account selection, destructive overwrite, private data exposure, or service-side approval is required and not already authorized.
+Stop for missing credentials, account ambiguity, destructive overwrite, private-data risk, or unavailable readback.
 
 Capture Policy:
-Propose skill or AGENTS.md updates only if this reveals a reusable publication or connector-selection rule.
+Propose a skill or routing update only for a reusable publication rule.
 ```
